@@ -6,6 +6,8 @@ import 'package:news_app/screens/First_Screen.dart';
 import 'package:news_app/screens/NewsScreen.dart';
 import 'package:news_app/screens/SoursesView.dart';
 
+import '../model/Categers.dart';
+
 class home_screen extends StatefulWidget {
   home_screen({super.key});
 
@@ -20,6 +22,19 @@ class _home_screenState extends State<home_screen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: FirstScreen());
+    return Scaffold(
+      drawer: Drawer(),
+      appBar: AppBar(centerTitle: true,title: Text('Home'),),
+      body: selectedCategers != null
+          ? Soursesview(categoryId: selectedCategers!.id,)
+          : FirstScreen(OnCliked: OnCliked),
+    );
+  }
+
+  Categers? selectedCategers;
+
+  OnCliked(Categers categers) {
+    selectedCategers = categers;
+    setState(() {});
   }
 }

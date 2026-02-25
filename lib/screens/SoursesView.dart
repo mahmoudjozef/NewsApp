@@ -2,70 +2,72 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_app/core/api_maneger.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/cubit.dart';
+import '../bloc/states.dart';
 import 'NewsScreen.dart';
 
-class Soursesview extends StatefulWidget {
-  Soursesview({super.key});
+class Soursesview extends StatelessWidget {
+  final String categoryId;
 
-  @override
-  State<Soursesview> createState() => _SoursesviewState();
-}
-
-class _SoursesviewState extends State<Soursesview> {
-  int selectedIndex = 0;
+  Soursesview({super.key, required this.categoryId});
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: apiManager.getSourses(),
-      builder: (context, snapshot) {
-        //handeling data
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Something went wrong'));
-        } else {
-          var dataList = snapshot.data?.sources ?? [];
-          return
-            DefaultTabController(
-            initialIndex: selectedIndex,
-            length: dataList.length,
-            child: Column(
-              children: [
-                //tabBar
-                TabBar(
-                  onTap: (value) {
-                    selectedIndex = value;
-                    setState(() {});
-                  },
-                  dividerColor: Colors.transparent,
-                  indicatorColor: Colors.black,
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  labelStyle: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  unselectedLabelStyle: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  tabs: dataList
-                      .map((e) => Tab(child: Text(e.name ?? "")))
-                      .toList(),
+    return SafeArea(
+      child: BlocProvider(
+        create: (context) => HomeCubit()..GetSourse(categoryId),
+        child: BlocConsumer<HomeCubit, HomeState>(
+          listener: (context, state) {
+            if (state is GetNewsLodingState || state is GetSoursesLodingState) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Center(child: CircularProgressIndicator()),
+                  backgroundColor: Colors.transparent,
                 ),
-                //body
-                Expanded(
-                  child: NewsScreen(sourceId: dataList[selectedIndex].id ?? ""),
-                ),
-              ],
-            ),
-          );
-        }
-      },
+              );
+            }
+          },
+          builder: (context, state) {
+            var Bloc = BlocProvider.of<HomeCubit>(context);
+            return DefaultTabController(
+              length: Bloc.sourses.length,
+              initialIndex: Bloc.selectedIndex,
+              child: Column(
+                children: [
+                  //tabBar
+                  TabBar(
+                    onTap: (value) {
+                      Bloc.ChangeSelected(value);
+                    },
+
+                    dividerColor: Colors.transparent,
+                    indicatorColor: Colors.black,
+                    tabAlignment: TabAlignment.start,
+                    isScrollable: true,
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey,
+                    labelStyle: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    unselectedLabelStyle: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    tabs: Bloc.sourses
+                        .map((e) => Tab(child: Text(e.name ?? "")))
+                        .toList(),
+                  ),
+                  //body
+                  Expanded(child: NewsScreen()),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

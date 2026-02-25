@@ -6,10 +6,10 @@ import '../model/sourseResponse.dart';
 class apiManager {
   static final dio = Dio();
 
-  static Future<SourseResponse?> getSourses() async {
+  static Future<SourseResponse?> getSourses(String categoryId) async {
     try {
       Response response = await dio.get(
-        "https://newsapi.org/v2/top-headlines/sources?apiKey=013fe025a27443788bb8e50dde2465ab",
+        'https://newsapi.org/v2/top-headlines/sources?apiKey=013fe025a27443788bb8e50dde2465ab&category=$categoryId',
       );
       SourseResponse sourseResponse = SourseResponse.fromJson(response.data);
       return sourseResponse;
@@ -31,6 +31,4 @@ class apiManager {
       print('Something went wrong');
     }
   }
-
-
 }
