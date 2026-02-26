@@ -17,10 +17,12 @@ class HomeCubit extends Cubit<HomeState> {
   ChangeSelected(int index) {
     selectedIndex = index;
     emit(ChangeSelectedSourse());
+    GetNews();
   }
 
-
   GetSourse(String categoryId) async {
+    emit(GetSoursesLodingState());   // ✅ ضيف دي
+
     try {
       Response response = await dio.get(
         'https://newsapi.org/v2/top-headlines/sources?apiKey=013fe025a27443788bb8e50dde2465ab&category=$categoryId',
@@ -36,19 +38,40 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   GetNews() async {
+    emit(GetNewsLodingState());   // ✅ ضيف دي
+
     try {
       Response response = await dio.get(
         "https://newsapi.org/v2/everything?q=bitcoin&apiKey=013fe025a27443788bb8e50dde2465ab&sources=${sourses[selectedIndex].id}",
+
       );
+
       NewsDataResponse newsDataResponse = NewsDataResponse.fromJson(
         response.data,
       );
+
       articles = newsDataResponse.articles ?? [];
+      print("News Count: ${articles.length}");
       emit(GetNewsSuccessState());
-      GetNews();
     } catch (e) {
       emit(GetNewsErorrState());
       print('Something went wrong');
     }
   }
+
+// GetNews() async {
+//   try {
+//     Response response = await dio.get(
+//       "https://newsapi.org/v2/everything?q=bitcoin&apiKey=013fe025a27443788bb8e50dde2465ab&sources=${sourses[selectedIndex].id}",
+//     );
+//     NewsDataResponse newsDataResponse = NewsDataResponse.fromJson(
+//       response.data,
+//     );
+//     articles = newsDataResponse.articles ?? [];
+//     emit(GetNewsSuccessState());
+//   } catch (e) {
+//     emit(GetNewsErorrState());
+//     print('Something went wrong');
+//   }
+// }
 }

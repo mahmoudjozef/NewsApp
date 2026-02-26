@@ -23,7 +23,12 @@ class _home_screenState extends State<home_screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(),
+      drawer: Drawer(child: SafeArea(
+        child: Column(
+          children: [ElevatedButton(onPressed: () {
+          Navigator.pushReplacementNamed(context, FirstScreen.routeNamed);
+        }, child: Text('Logout'))],),
+      ),),
       appBar: AppBar(centerTitle: true,title: Text('Home'),),
       body: selectedCategers != null
           ? Soursesview(categoryId: selectedCategers!.id,)

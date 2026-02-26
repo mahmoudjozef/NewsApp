@@ -17,52 +17,33 @@ class Soursesview extends StatelessWidget {
     return SafeArea(
       child: BlocProvider(
         create: (context) => HomeCubit()..GetSourse(categoryId),
-        child: BlocConsumer<HomeCubit, HomeState>(
-          listener: (context, state) {
-            if (state is GetNewsLodingState || state is GetSoursesLodingState) {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Center(child: CircularProgressIndicator()),
-                  backgroundColor: Colors.transparent,
-                ),
-              );
-            }
-          },
+        child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
-            var Bloc = BlocProvider.of<HomeCubit>(context);
+            var data = BlocProvider.of<HomeCubit>(context);
             return DefaultTabController(
-              length: Bloc.sourses.length,
-              initialIndex: Bloc.selectedIndex,
-              child: Column(
-                children: [
-                  //tabBar
-                  TabBar(
-                    onTap: (value) {
-                      Bloc.ChangeSelected(value);
-                    },
-
-                    dividerColor: Colors.transparent,
-                    indicatorColor: Colors.black,
-                    tabAlignment: TabAlignment.start,
-                    isScrollable: true,
-                    labelColor: Colors.black,
-                    unselectedLabelColor: Colors.grey,
-                    labelStyle: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              initialIndex: data.selectedIndex,
+              length: data.sourses.length,
+              child: Scaffold(
+                body: Column(
+                  children: [
+                    TabBar(
+                      onTap: (value) {
+                        data.ChangeSelected(value);
+                      },
+                      isScrollable: true,
+                      dividerColor: Colors.transparent,
+                      tabAlignment: TabAlignment.start,
+                      labelColor: Colors.black,
+                      indicatorColor: Colors.black,
+                      tabs: data.sourses
+                          .map((e) => Tab(child: Text(e.name ?? "")))
+                          .toList(),
                     ),
-                    unselectedLabelStyle: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Newsscreen(),
                     ),
-                    tabs: Bloc.sourses
-                        .map((e) => Tab(child: Text(e.name ?? "")))
-                        .toList(),
-                  ),
-                  //body
-                  Expanded(child: NewsScreen()),
-                ],
+                  ],
+                ),
               ),
             );
           },
