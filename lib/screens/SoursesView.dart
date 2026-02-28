@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:news_app/core/api_maneger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cubit.dart';
 import '../bloc/states.dart';
@@ -40,7 +37,9 @@ class Soursesview extends StatelessWidget {
                           .toList(),
                     ),
                     Expanded(
-                      child: Newsscreen(),
+                      child: data.articles.isEmpty
+                          ? Center(child: (Text('No Data')))
+                          : Newsscreen(),
                     ),
                   ],
                 ),
