@@ -84,7 +84,7 @@ class Newsscreen extends StatelessWidget {
                                                   arguments: data[index].url);
                                             },
                                             child: Text(
-                                              'View Full Articel',
+                                              'View Full Articel.',
                                               style: TextStyle(
                                                 color: Colors.white,
                                               ),
