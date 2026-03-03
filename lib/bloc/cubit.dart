@@ -1,18 +1,22 @@
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
+import 'package:news_app/Repostiry/Local/Home_Local_Repo.dart';
+import 'package:news_app/Repostiry/Remot/Home_Remot_Repo.dart';
 import 'package:news_app/bloc/states.dart';
 import 'package:news_app/model/NewsData.dart';
 
 import '../model/sourseResponse.dart';
-
+@injectable
 class HomeCubit extends Cubit<HomeState> {
+  HomeRemoteRepo homeRemoteRepo;
+  HomeLocalRepo homeLocalRepo;
+
+  HomeCubit(this.homeRemoteRepo, this.homeLocalRepo) : super(HomeInitState());
+
   List<Sources> sourses = [];
   List<Articles> articles = [];
 
   int selectedIndex = 0;
-
-  HomeCubit() : super(HomeInitState());
-  Dio dio = Dio();
 
   ChangeSelected(int index) {
     selectedIndex = index;
@@ -21,14 +25,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   GetSourse(String categoryId) async {
-    emit(GetSoursesLodingState());   // ✅ ضيف دي
+    emit(GetSoursesLodingState());
 
     try {
-      Response response = await dio.get(
-        'https://newsapi.org/v2/top-headlines/sources?apiKey=013fe025a27443788bb8e50dde2465ab&category=$categoryId',
-      );
-      SourseResponse sourseResponse = SourseResponse.fromJson(response.data);
-      sourses = sourseResponse.sources ?? [];
+      sourses = await homeRemoteRepo.GetSourse(categoryId);
+
       emit(GetSoursesSuccessState());
       GetNews();
     } catch (e) {
@@ -38,19 +39,11 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   GetNews() async {
-    emit(GetNewsLodingState());   // ✅ ضيف دي
+    emit(GetNewsLodingState());
 
     try {
-      Response response = await dio.get(
-        "https://newsapi.org/v2/everything?q=bitcoin&apiKey=013fe025a27443788bb8e50dde2465ab&sources=${sourses[selectedIndex].id}",
+      articles = await homeRemoteRepo.GetNews(sourses[selectedIndex].id ?? '');
 
-      );
-
-      NewsDataResponse newsDataResponse = NewsDataResponse.fromJson(
-        response.data,
-      );
-
-      articles = newsDataResponse.articles ?? [];
       print("News Count: ${articles.length}");
       emit(GetNewsSuccessState());
     } catch (e) {
@@ -58,20 +51,4 @@ class HomeCubit extends Cubit<HomeState> {
       print('Something went wrong');
     }
   }
-
-// GetNews() async {
-//   try {
-//     Response response = await dio.get(
-//       "https://newsapi.org/v2/everything?q=bitcoin&apiKey=013fe025a27443788bb8e50dde2465ab&sources=${sourses[selectedIndex].id}",
-//     );
-//     NewsDataResponse newsDataResponse = NewsDataResponse.fromJson(
-//       response.data,
-//     );
-//     articles = newsDataResponse.articles ?? [];
-//     emit(GetNewsSuccessState());
-//   } catch (e) {
-//     emit(GetNewsErorrState());
-//     print('Something went wrong');
-//   }
-// }
 }

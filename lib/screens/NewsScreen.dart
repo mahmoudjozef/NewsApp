@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/cubit.dart';
 import '../theming/bloc/cubit.dart';
-import 'AllDet.dart';
+import 'WebViewScreen.dart';
 import 'Widget/ShowBootomSheet.dart';
 
 class Newsscreen extends StatelessWidget {
