@@ -5,16 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/cubit.dart';
 import '../theming/bloc/cubit.dart';
 import 'WebViewScreen.dart';
-import 'Widget/ShowBootomSheet.dart';
 
 class Newsscreen extends StatelessWidget {
   Newsscreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var data = BlocProvider
-        .of<HomeCubit>(context)
-        .articles;
+    var data = BlocProvider.of<HomeCubit>(context).articles;
     var bloc = BlocProvider.of<ThemeCubit>(context);
     return Column(
       children: [
@@ -48,10 +45,7 @@ class Newsscreen extends StatelessWidget {
                                 builder: (context) {
                                   return Container(
                                     height:
-                                    MediaQuery
-                                        .of(context)
-                                        .size
-                                        .height * .5,
+                                        MediaQuery.of(context).size.height * .5,
                                     width: double.infinity,
                                     padding: EdgeInsets.all(16),
                                     child: Column(
@@ -79,9 +73,11 @@ class Newsscreen extends StatelessWidget {
                                             ),
 
                                             onPressed: () {
-                                              Navigator.pushNamed(context,
-                                                  WebViewScreen.routeName,
-                                                  arguments: data[index].url);
+                                              Navigator.pushNamed(
+                                                context,
+                                                WebViewScreen.routeName,
+                                                arguments: data[index].url,
+                                              );
                                             },
                                             child: Text(
                                               'View Full Articel.',
@@ -109,9 +105,7 @@ class Newsscreen extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(data[index].author
-                                ?.split(' ')
-                                .first ?? ''),
+                            Text(data[index].author?.split(' ').first ?? ''),
                             Text(
                               data[index].publishedAt?.substring(0, 10) ?? '',
                             ),

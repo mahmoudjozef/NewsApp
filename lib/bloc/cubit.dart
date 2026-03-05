@@ -3,19 +3,19 @@ import 'package:injectable/injectable.dart';
 import 'package:news_app/Repostiry/Local/Home_Local_Repo.dart';
 import 'package:news_app/Repostiry/Remot/Home_Remot_Repo.dart';
 import 'package:news_app/bloc/states.dart';
+import 'package:news_app/core/internet_checker.dart';
 import 'package:news_app/model/NewsData.dart';
 
 import '../model/sourseResponse.dart';
+
 @injectable
 class HomeCubit extends Cubit<HomeState> {
   HomeRemoteRepo homeRemoteRepo;
   HomeLocalRepo homeLocalRepo;
 
   HomeCubit(this.homeRemoteRepo, this.homeLocalRepo) : super(HomeInitState());
-
   List<Sources> sourses = [];
   List<Articles> articles = [];
-
   int selectedIndex = 0;
 
   ChangeSelected(int index) {
@@ -28,7 +28,9 @@ class HomeCubit extends Cubit<HomeState> {
     emit(GetSoursesLodingState());
 
     try {
-      sourses = await homeRemoteRepo.GetSourse(categoryId);
+      sourses = InternetConnectivity().isConnected
+          ? await homeRemoteRepo.GetSourse(categoryId)
+          : await homeLocalRepo.GetSourse(categoryId);
 
       emit(GetSoursesSuccessState());
       GetNews();
@@ -42,7 +44,9 @@ class HomeCubit extends Cubit<HomeState> {
     emit(GetNewsLodingState());
 
     try {
-      articles = await homeRemoteRepo.GetNews(sourses[selectedIndex].id ?? '');
+      articles =InternetConnectivity().isConnected
+          ? await homeRemoteRepo.GetNews(sourses[selectedIndex].id ?? '')
+          : await homeLocalRepo.GetNews(sourses[selectedIndex].id ?? '');
 
       print("News Count: ${articles.length}");
       emit(GetNewsSuccessState());
@@ -51,4 +55,5 @@ class HomeCubit extends Cubit<HomeState> {
       print('Something went wrong');
     }
   }
+
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/Repostiry/Local/Home_Local_Impl.dart';
 import 'package:news_app/Repostiry/Local/Home_Local_Repo.dart';
 import 'package:news_app/Repostiry/Remot/Home_Remot_impl.dart';
+import 'package:news_app/di.dart';
 import '../bloc/cubit.dart';
 import '../bloc/states.dart';
 import 'NewsScreen.dart';
@@ -17,7 +18,7 @@ class Soursesview extends StatelessWidget {
     return SafeArea(
       child: BlocProvider(
         create: (context) =>
-            HomeCubit(HomeRemotImpl(), HomeLocalImpl())..GetSourse(categoryId),
+            getIt<HomeCubit>()..GetSourse(categoryId),
         child: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
             var data = BlocProvider.of<HomeCubit>(context);
